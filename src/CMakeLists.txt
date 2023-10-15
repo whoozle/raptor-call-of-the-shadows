@@ -47,6 +47,7 @@ add_library(rapcore STATIC
 target_include_directories(rapcore PUBLIC dos gfx apodmx)
 target_compile_definitions(rapcore PUBLIC -D_loadds= -Dfar= -D_far= -D_interrupt= -D__cdecl= -Dcdecl= )
 target_compile_definitions(rapcore PRIVATE -Dstricmp=strcmpi -Dmain=_dos_main -Dopen=_dos_open -Daccess=_dos_access -Dfopen=_dos_fopen)
+target_link_libraries(rapcore PRIVATE -lm)
 
 add_executable(rap MACOSX_BUNDLE
     dos/dos.c

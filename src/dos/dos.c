@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <math.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <dirent.h>
@@ -961,6 +962,38 @@ int FX_PlayRaw( char *ptr, unsigned long length, unsigned rate,
     if (idx < 0)
         return idx;
 
+    char *pitched = NULL;
+    if (pitchoffset != 0) {
+        float mul = powf(2, pitchoffset / 1200.0f);
+        unsigned long pitched_length = length / mul;
+        pitched = (char *)malloc(pitched_length);
+        if (pitched) {
+            char *dst = pitched;
+            char *src = ptr;
+            if (pitched_length > length) {
+                unsigned long pos = 0;
+                for(unsigned long i = 0; i != length; ++i) {
+                    unsigned long next = (i + 1) / mul;
+                    char v = src[i];
+                    while(pos < next)
+                        dst[pos++] = v;
+                }
+            } else {
+                unsigned long pos = 0;
+                for(unsigned long i = 0; i != pitched_length; ++i) {
+                    unsigned long next = (i + 1) * mul;
+                    unsigned v = 0;
+                    unsigned n = next - pos;
+                    while(pos < next)
+                        v += src[pos++];
+                    v /= n;
+                    dst[i] = v;
+                }
+            }
+        }
+        length = pitched_length;
+    }
+
     SDL_AudioCVT cvt;
     int r = SDL_BuildAudioCVT(&cvt, AUDIO_U8, 1, rate, GAME_MIX_FORMAT, 1, GAME_MIX_FREQ);
     if (r < 0) {
@@ -968,7 +1001,8 @@ int FX_PlayRaw( char *ptr, unsigned long length, unsigned rate,
         abort();
     }
     cvt.buf = (Uint8*)malloc(length * cvt.len_mult);
-    memcpy(cvt.buf, ptr, length);
+    memcpy(cvt.buf, pitched? pitched: ptr, length);
+    free(pitched);
     if (r > 0) {
         if (!cvt.buf) {
             perror("malloc");
