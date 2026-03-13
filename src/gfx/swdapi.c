@@ -226,7 +226,7 @@ BYTE * inmem
       curpos++;
 
    memcpy ( textfill, text, curpos );
-   textfill [ curpos ] = NULL;
+   textfill [ curpos ] = 0;
 
    while ( *( text + curpos ) <= 31 )
       curpos++;
@@ -2517,11 +2517,11 @@ CHAR * in_text             // OUTPUT: pointer to string
   
    if ( in_text )
    {
-      text [ curfld->maxchars - 1 ] = NUL;
+      text [ curfld->maxchars - 1 ] = 0;
       memcpy ( text, in_text, curfld->maxchars - 1 );
    }
    else
-      *text = NUL;
+      *text = 0;
   
    return ( curfld->maxchars );
 }

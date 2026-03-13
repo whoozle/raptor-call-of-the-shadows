@@ -22,7 +22,7 @@
 
 #include <stdio.h>
 
-#ifndef __cplusplus
+#if !defined(__cplusplus) && __STDC_VERSION__ < 202000
 typedef enum {false, true} bool;
 #endif
 

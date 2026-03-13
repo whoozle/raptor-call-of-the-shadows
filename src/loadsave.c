@@ -595,7 +595,7 @@ VOID
                {
                   remove ( filenames[pos] );
                   WIN_Msg ("Pilot Removed !");
-                  filenames [ pos ][ 0 ] = NUL; 
+                  filenames [ pos ][ 0 ] = 0; 
                   pos++;
                }
                break;
